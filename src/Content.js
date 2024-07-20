@@ -1,49 +1,34 @@
-// Times setInterval , SetTimeout,ClearInterval, clearTimeout
-
-//call api
-
-/**
-
- * 4.Cleanip
- * -Remove Listener / Unsubscribe
- * Clear time
- **/
-/// lý thuyết chung của 3 cái học bên dưới
-//  1. Callbacks luôn được gọi khi component mounted(cài vào)
-// 2. Clearn fuction luôn luôn được gọi trước khi component unmounted(gỡ ra)
-// 3 clearnup được gọi trước khi compoment được goi trừ lần mounted
-
-// times setInterval, SetTimeoutInterval,
-// 1 hoat dong trong react component
-// 2 là set nó như thế nào
-// 3.cách giải quyết
-//xây đựng 1 ứng dụng dếm ngược theo giây
-// setTimeout chạy 1 lần duy nhất theo số s đẫ được lập trình
-// còn setInterval sét nhìu lần chạy  theo số s đã được lên lịch trình
 import { useEffect, useState } from 'react';
-
+// bai toan import images lên trang web sau đó dọn dẹp lại luôn
 function Content() {
-    const [countDown, setCountDown] = useState(190);
-    // cách dùng sai
-    // setInterval(() => {
-    //     setCountDown(countDown - 1);
-    // }, 1000);
-    // lặp vô hạn
-    // mỗi 1s chạy nhiều lần set lại cùng 1 lúc
-    // do chạy 1 lần nên chọn cách số 2
-    // setTimes out chạy có 1 lần nên khi số thay đôi thì ta truyền des cho nó chạy tiiếp
-    useEffect(() => {
-        const clearSet = setInterval(() => {
-            //setCountDown(countDown - 1); // chạy được 1 lần dừng lại nhưn nó vẫn cahyj setinterval ngầm bên trong
-            setCountDown((prevCount) => prevCount - 1); // nhưng callback cho phép nó chạy render ra két quả
-            console.log('setInterval');
-        }, 1000);
+    // cần ảnh hiện thay đổi re-render lại nên cần dùng state
+    const [avatar, setAvatar] = useState();
+    const handlePreviewAvatar = (e) => {
+        const file = e.target.files[0];
+        //console.log(URL.createObjectURL(file));
+        // preview tu dat ten
+        file.preview = URL.createObjectURL(file); // url xem tạm
 
-        return () => clearInterval(clearSet);
-    }, []); // do ngoặc ko có giá trị nên chạy đúng 1 lần render giao diện
+        setAvatar(file); // set vẫn còn lưu trong bộ nhớ
+    };
+    useEffect(() => {
+        // dùng luôn cleanup dể xoá bỏ cái ảnh thừa
+
+        return () => {
+            // kiem tra avatar co ton tai khong moi xoa, chứ mặt dịnh nó là undefined
+            avatar && URL.revokeObjectURL(avatar.preview); // nhận cái ủl xem tạm đó  để xoá url xem tạm khỏi bộ nhớ
+        };
+    }, [avatar]); // mỗi lần chọn ảnh nó sẽ chọt vào cái này
+
     return (
         <div>
-            <h1> {countDown} </h1>
+            <input
+                type="file"
+                // multiple // cho phép chọn nhiều ảnh còn ko có cho phép chọn 1 ảnh duy nhất mà thôi
+                onChange={handlePreviewAvatar} // onchange là sự thay đổi nên 2 hình 1 lúc nó sẽ ko hiện nha
+            />
+            {avatar && <img src={avatar.preview} alt="" width="80%" />}
+            {/* hiển thị ảnh đã chọn */}
         </div>
     );
 }
