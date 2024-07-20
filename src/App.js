@@ -1,35 +1,16 @@
 import { useState } from 'react';
+import Content from './Content';
 
-//3.Todolist
+// mounted và unmounted
+// mounted là nó đặt vào còn unmounted là gỡ ra
+// taoj nut button mounted va unmounted
 
 function App() {
-    const [job, setJob] = useState('');
-    const [jobs, setJobs] = useState(() => {
-        const storage = JSON.parse(localStorage.getItem('jobs'));
-        return storage ?? [];
-    }); // toán tử ?? nếu giá trị ở trước là null/ hoặc undefine nó sẽ lấy giá trị sau, giống như || mà || lấy giá trị là number boolean , string nên ko lấy giá trị đó dc
-
-    const handeleSubmit = () => {
-        // setJobs([...jobs, job]);
-        setJobs((prev) => {
-            const newJobs = [...prev, job];
-            // save to local storage
-            const jsonJobs = JSON.stringify(newJobs);
-            localStorage.setItem('jobs', jsonJobs);
-            return newJobs;
-        });
-        setJob('');
-        // luu vào local Storage , lưu chuỗi chứ ko lưu mnagr
-    };
+    const [show, setShow] = useState(false);
     return (
         <div style={{ padding: 32 }}>
-            <input value={job} onChange={(e) => setJob(e.target.value)} />
-            <button onClick={handeleSubmit}>ADD</button>
-            <ul>
-                {jobs.map((job, index) => (
-                    <li key={index}>{job}</li>
-                ))}
-            </ul>
+            <button onClick={() => setShow(!show)}>Change</button>
+            {show && <Content />}
         </div>
     );
 }
