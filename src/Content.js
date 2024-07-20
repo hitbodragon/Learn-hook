@@ -22,6 +22,7 @@
  **/
 /// lý thuyết chung của 3 cái học bên dưới
 //  1. Callbacks luôn được gọi khi component mounted(cài vào)
+// 2. Clearn fuction luôn luôn được gọi trước khi component unmounted(gỡ ra)
 import { useEffect, useState } from 'react';
 
 //3 effect deps
@@ -29,10 +30,10 @@ const tabs = ['Posts', 'Comments', 'Albums'];
 function Content() {
     // đối số thứ 1 là cái hàm cần truyền vào còn deps là sự phụ thuộc về mặt dữ liệu
     //useEffect(callbacks,[deps])
-    const [tittle, setTittle] = useState('');
+    //const [tittle, setTittle] = useState('');
     const [posts, setPosts] = useState([]);
     const [type, setType] = useState('Comments');
-
+    const [showGotoTop, setShowGotoTop] = useState(false);
     useEffect(() => {
         // Xử lý tạo ra giao diện người dùng
         // document.title = tittle;
@@ -42,6 +43,28 @@ function Content() {
                 setPosts(posts);
             });
     }, [type]); // kiểm tra title trước và sau có khác nhau không để re render nó sử dụng toán tử ===
+
+    // add sự kiện dom event listener với sự kiện scroll khi cuộn thanh lên xuống 200px
+    useEffect(() => {
+        // cuộn 1 lần nên dùng []
+        const handleScroll = () => {
+            if (window.scrollY > 200) {
+                setShowGotoTop(true);
+            } else {
+                setShowGotoTop(false);
+            }
+        };
+        // setShowGotoTop(window.scrollY >200) thay dong code o tren
+        // thêm sự kiện scroll cho  window
+        window.addEventListener('scroll', handleScroll);
+        console.log('addEventListener');
+        // khi unmount thì windown vẫn còn vì nó ở trạng thái trình duyệt ,, nên sinh ra rò rĩ bộ nhớ, nên ta có hàm return sự kiện
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            console.log('unmounted');
+        };
+    }, []);
 
     return (
         <div>
@@ -58,12 +81,19 @@ function Content() {
                     {tab}
                 </button>
             ))}
-            <input value={tittle} onChange={(e) => setTittle(e.target.value)} />
+            {/* <input value={tittle} onChange={(e) => setTittle(e.target.value)} /> */}
             <ul>
                 {posts.map((post) => (
                     <li key={post.id}>{post.title || post.name}</li>
                 ))}
             </ul>
+            {showGotoTop && (
+                <button
+                    style={{ position: 'fixed', right: '10px', bottom: '10px' }}
+                >
+                    Go to top
+                </button>
+            )}
         </div>
     );
 }
