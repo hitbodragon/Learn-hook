@@ -24,28 +24,44 @@
 //  1. Callbacks luôn được gọi khi component mounted(cài vào)
 import { useEffect, useState } from 'react';
 
+//3 effect deps
+const tabs = ['Posts', 'Comments', 'Albums'];
 function Content() {
     // đối số thứ 1 là cái hàm cần truyền vào còn deps là sự phụ thuộc về mặt dữ liệu
     //useEffect(callbacks,[deps])
     const [tittle, setTittle] = useState('');
     const [posts, setPosts] = useState([]);
+    const [type, setType] = useState('Comments');
 
     useEffect(() => {
         // Xử lý tạo ra giao diện người dùng
         // document.title = tittle;
-        fetch('https://jsonplaceholder.typicode.com/posts')
+        fetch(`https://jsonplaceholder.typicode.com/${type}`)
             .then((response) => response.json())
             .then((posts) => {
                 setPosts(posts);
             });
-    }, []);
+    }, [type]); // kiểm tra title trước và sau có khác nhau không để re render nó sử dụng toán tử ===
 
     return (
         <div>
+            {tabs.map((tab, index) => (
+                <button
+                    key={index}
+                    style={
+                        type === tab
+                            ? { color: 'fff', backgroundColor: '#333' }
+                            : {}
+                    }
+                    onClick={() => setType(tab)}
+                >
+                    {tab}
+                </button>
+            ))}
             <input value={tittle} onChange={(e) => setTittle(e.target.value)} />
             <ul>
                 {posts.map((post) => (
-                    <li key={post.id}>{post.title}</li>
+                    <li key={post.id}>{post.title || post.name}</li>
                 ))}
             </ul>
         </div>
@@ -60,3 +76,4 @@ export default Content;
 //2 là useEffect(callbacks,[])
 // chỉ gọi callbacks 1 lần sau khi component mounted, logic chạy 1 lần
 //3 là useEffect(callbacks,[deps]
+// callbacks sẽ được gọi lại mỗi khi deps thay đổi
