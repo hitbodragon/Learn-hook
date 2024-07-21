@@ -1,26 +1,66 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import Content from './Content';
 
 function App() {
-    const [count, setCount] = useState(0);
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [products, setProducts] = useState([]);
+    const nameRef = useRef();
 
-    const handleIncrease = useCallback(() => {
-        setCount((prevCount) => prevCount + 1);
-    }, []);
-
+    const handleSubmit = () => {
+        setProducts([
+            ...products,
+            {
+                name,
+                price: +price,
+            },
+        ]);
+        setName('');
+        setPrice('');
+        nameRef.current.focus();
+        // này sử dụng toway bindings
+    };
+    // console.log(products);
+    // convert price về dạng số  Number(price), +price, prase(price)
+    // tin tong dùng reduce
+    // mỗi lần onchange sẽ dẫn dến gọi lại hàm và ren der lại giao diện đồng thời hàm reduce thực hiện tính toán lại ko
+    // cần thiết nên ta dùng use memo để thực hiện xoá những logic ko cần thiết, memo xoá nhưng component ko cần thiết
+    // const total = products.reduce((result, prod) => result + prod.price, 0);
+    const total = useMemo(() => {
+        const result = products.reduce((result, prod) => {
+            console.log(' tinh toan lai ');
+            return result + prod.price;
+        }, 0);
+        return result;
+    }, [products]);
+    //usememo(callback,des)
     return (
-        <div style={{ padding: '10px 32px', color: '#f05123' }}>
-            <Content onIncrease={handleIncrease} />
-            <h1>{count}</h1>
+        <div style={{ padding: '20px 32px' }}>
+            <input
+                ref={nameRef}
+                value={name}
+                placeholder="Enter name"
+                onChange={(e) => setName(e.target.value)}
+            />
+            <br />
+            <input
+                value={price}
+                placeholder="Enter price"
+                onChange={(e) => setPrice(e.target.value)}
+            />
+            <br />
+            <button onClick={handleSubmit}> Add </button>
+            <br />
+            Total :{total}
+            <ul>
+                {products.map((product, index) => (
+                    <li key={index}>
+                        {product.name} - {product.price}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
 
 export default App;
-// useCallback tránh viện rerender của các component ko cần thiết
-// sau khi  thực hiện lệnh button các hàm sẽ thực hiện lệnh thì các hàm sẽ tả về 1 giá trị tham chiếu và lưu vào giá trị lưu trữ,
-// các biến này có giá trị lưu trữ lưu vào trong bộ nhớ cho nên dù gọi 1 hàm giống nhau nhưng tham chiếu khác nhau dẫn dến memo k phan biệt được
-// dẫn dến trường hợp re render các component ko cần thiết dẫn đến hiệu năng trang web kém
-// trong trường hợp đó usecallback ra đời và giúp mỗi lần funtion thực hiện thì usecallback sẽ lưu giá trị tham chiếu đó vào bên trong nó
-// mỗi khi gọi hàm giá trị tham chiếu trong usecallback ko thay đổi vì đã lưu ở trước đó,, qua hàm children nó sẽ được memo so sánh bằng toán tử ====
-// và giá trị là như nhau nên các component sẽ ko render ko cần thiết nữa
