@@ -1,36 +1,13 @@
-import { useLayoutEffect, useState } from 'react';
+import { memo } from 'react';
 
-// #useEffect
-// 1. Cập nhật lại state
-// 2. Cập nhật DOM (mutated)
-// 3. Render lại UI
-// 4. Gọi cleanup nếu deps thay đổi
-// 5. Gọi useEffect callback
+function Content({ count }) {
+    console.log('re-render');
 
-// #useLayoutEffect
-// 1. Cập nhật lại state
-// 2. Cập nhật DOM (mutated)
-// 3. Gọi cleanup nếu deps thay đổi (sync)
-// 4. Gọi useLayoutEffect callback (sync)
-// 5. Render lại UI
-function Content() {
-    const [count, setCount] = useState(0);
-
-    useLayoutEffect(() => {
-        // thực hiện callback trước chứ ko phải chờ render rồi mới thực hiện
-        if (count > 3) setCount(0);
-    }, [count]);
-
-    const handleRun = () => {
-        setCount(count + 1);
-    };
-
-    return (
-        <div>
-            <h1>{count}</h1>
-            <button onClick={handleRun}>Run</button>
-        </div>
-    );
+    return <h2>SỐ LƯỢNG CLICK CỦA BẠN LÀ : {count}</h2>; // props cha thay đổi nên con cũng thay đổi
 }
 
-export default Content;
+export default memo(Content);
+// memo giúp cho việc re render không cần thiết : nếu như các props của cha thay đổi thì hàm con sẽ thay đổi theo
+//tránh việc các props cha ko thay đổi mà con cứ  rerender hiệu năng nó sẽ giảm
+// sụwr dụng toán tử  === so sánh , nếu cha thay đổi nhưng thay đổi giống nhau ko qua props dến con thì con ko bị rerender lại
+// nếu bên cha thay đổi ít nhất 1 pops thì nó sẽ rerender lại
