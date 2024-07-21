@@ -1,26 +1,24 @@
-import './App.css';
-import Content from './Content';
-import { useContext } from 'react';
-import { ThemeContext } from './Theme';
-
-// có thể sử dụng vô số Context khác nhau
-
-//context
-//CompA => compB =>CompC
-// theme : Dark /Light
-// 1. Create context
-//2. provider(cung cấp dữ liệu)
-//3. Consumer nhận dữ liệu
+import { useStore, actions } from './store';
 
 function App() {
-    const context = useContext(ThemeContext); // nó s�� lấy giá trị từ provider ở trên
-    return (
-        //cái này sẽ giúp cho component con nhận được giá trị ở trên
-        // value ở đây có gì thì usecontext của thằng con sẽ nhận được giá trị đó tương ứng bên con
+    const [state, dispatch] = useStore();
+    const { todos, todoInput } = state;
+    const handleAddTodo = () => {
+        dispatch(actions.addTodoInput(todoInput));
+        dispatch(actions.setTodoInput(''));
+    };
 
+    return (
         <div style={{ padding: 20 }}>
-            <button onClick={context.toggleTheme}> Toggle </button>
-            <Content />
+            <input
+                value={todoInput}
+                placeholder="Enter todo..."
+                onChange={(e) => dispatch(actions.setTodoInput(e.target.value))}
+            />
+            <button onClick={handleAddTodo}>Add Todo</button>
+            {todos.map((todo, index) => (
+                <li key={index}>{todo}</li>
+            ))}
         </div>
     );
 }
