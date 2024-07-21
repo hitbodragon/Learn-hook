@@ -6,11 +6,11 @@ import Content from './Content';
 // taoj nut button mounted va unmounted
 
 function App() {
-    const [show, setShow] = useState(false);
+    const [showw, setShow] = useState(false);
     return (
         <div style={{ padding: 32 }}>
-            <button onClick={() => setShow(!show)}>Change</button>
-            {show && <Content />}
+            <button onClick={() => setShow(!showw)}>Change</button>
+            {showw && <Content />}
         </div>
     );
 }
