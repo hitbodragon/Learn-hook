@@ -1,64 +1,55 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useReducer } from 'react';
 import Content from './Content';
 
-function App() {
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
-    const [products, setProducts] = useState([]);
-    const nameRef = useRef();
+// useReducer làm được cái gì thì useState làm được cái đó
+// state dung các thao tác đơn giản như kiểu dữ liệu nguyên thuỷ , component ít logicc
+//thao tác các logic các object lồng nnhau
+// nhìu stae phương thức phức tạp
 
-    const handleSubmit = () => {
-        setProducts([
-            ...products,
-            {
-                name,
-                price: +price,
-            },
-        ]);
-        setName('');
-        setPrice('');
-        nameRef.current.focus();
-        // này sử dụng toway bindings
-    };
-    // console.log(products);
-    // convert price về dạng số  Number(price), +price, prase(price)
-    // tin tong dùng reduce
-    // mỗi lần onchange sẽ dẫn dến gọi lại hàm và ren der lại giao diện đồng thời hàm reduce thực hiện tính toán lại ko
-    // cần thiết nên ta dùng use memo để thực hiện xoá những logic ko cần thiết, memo xoá nhưng component ko cần thiết
-    // const total = products.reduce((result, prod) => result + prod.price, 0);
-    const total = useMemo(() => {
-        const result = products.reduce((result, prod) => {
-            console.log(' tinh toan lai ');
-            return result + prod.price;
-        }, 0);
-        return result;
-    }, [products]);
+//  phân tích
+// use state
+// 1. sẽ có giá trị khởi tạo
+// 2. có các hành động Action
+
+// use Reducer
+//1. giá trị khởi tạo
+//2. hành động là gì
+//3. reducer
+//4 dispatch
+
+// bài làm
+//1 Init State
+const initState = 0;
+//Actions
+const UP_ACTION = 'up';
+const DOWN_ACTION = 'down';
+// 3 reducers (hàm)
+// (init , action), nhận đầu vào là giá trị khởi tạo và nhân action làm hành động, giá trị hiện tại và hành động là gì
+const reducer = (state, action) => {
+    console.log('running');
+    // action trong switch// giá trị bảo lưu dựa vào init state
+    switch (action) {
+        case UP_ACTION:
+            return state + 1;
+        case DOWN_ACTION:
+            return state - 1;
+        default:
+            throw new Error(`Invalid action ${action}`); // action ko hợp lệ
+    }
+};
+function App() {
+    // useReduce có thể nhận lên đến 3 đối số (reudcer, initState)
+    // chạy , lần đầu chạy gọi reducer để đó , nhận giá trị khởi tạo và return lại 1 giá trị array
+    // trong trường hợp này count nhận initState làm giá trị khởi tạo , giá trị thứ 2 là 1 hmaf gọi là dispatch
+    // dispatch dùng để kích hoạt 1 cái action xem nó có hoạt động hay ko
+    const [count, dispatch] = useReducer(reducer, initState);
+
     //usememo(callback,des)
     return (
-        <div style={{ padding: '20px 32px' }}>
-            <input
-                ref={nameRef}
-                value={name}
-                placeholder="Enter name"
-                onChange={(e) => setName(e.target.value)}
-            />
-            <br />
-            <input
-                value={price}
-                placeholder="Enter price"
-                onChange={(e) => setPrice(e.target.value)}
-            />
-            <br />
-            <button onClick={handleSubmit}> Add </button>
-            <br />
-            Total :{total}
-            <ul>
-                {products.map((product, index) => (
-                    <li key={index}>
-                        {product.name} - {product.price}
-                    </li>
-                ))}
-            </ul>
+        <div style={{ padding: '10px 20px' }}>
+            <h1>{count}</h1>
+            <button onClick={() => dispatch(DOWN_ACTION)}>Down</button>
+            <button onClick={() => dispatch(UP_ACTION)}>Up</button>
         </div>
     );
 }
