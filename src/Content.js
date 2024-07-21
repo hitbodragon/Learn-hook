@@ -1,13 +1,11 @@
 import { memo } from 'react';
+import Paragrap from './Paragraph';
 
-function Content({ onIncrease }) {
-    console.log('re-render');
-
+function Content() {
     return (
-        <>
-            <h2>HELLO ANH EM TRÊN F8</h2>
-            <button onClick={onIncrease}>Click me!</button>
-        </>
+        <div>
+            <Paragrap />
+        </div>
     );
 }
 
