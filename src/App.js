@@ -1,25 +1,23 @@
-import { useStore, actions } from './store';
+import { useRef } from 'react';
+import Content from './Content';
 
 function App() {
-    const [state, dispatch] = useStore();
-    const { todos, todoInput } = state;
-    const handleAddTodo = () => {
-        dispatch(actions.addTodoInput(todoInput));
-        dispatch(actions.setTodoInput(''));
+    const videoRef = useRef();
+    const handlePlay = () => {
+        videoRef.current.play();
     };
-
+    const handlePause = () => {
+        videoRef.current.pause();
+    };
     return (
         <div style={{ padding: 20 }}>
-            <input
-                value={todoInput}
-                placeholder="Enter todo..."
-                onChange={(e) => dispatch(actions.setTodoInput(e.target.value))}
-            />
-            <button onClick={handleAddTodo}>Add Todo</button>
-            {todos.map((todo, index) => (
-                <li key={index}>{todo}</li>
-            ))}
+            <Content ref={videoRef} />
+            <button onClick={handlePlay}>Play </button>
+            <button onClick={handlePause}>Pause </button>
         </div>
     );
 }
 export default App;
+// bài toán đặt ra lfa thẻ con có video, mà thẻ cha lại truy câp được thẻ con public
+// theo hàng đợi thì nó dễ gây lỗi ở đâu cũng có thể truy xuất được phần tử mang props mặt dịnh của con mà cha lấy được
+// nên muốn lấy dạng private thì ta dùng useImperativeHandle để đảm bảo an toàn dữ liệu
